@@ -19,17 +19,21 @@ function draw(x, y, mouseX, mouseY, color, size) {
   ctx.lineTo(x, y)
   ctx.stroke()
 }
-const erase = (x, y, size) => {
-  ctx.clearRect(x - size / 2, y - size / 2, size, size)
-}
-
+//mobile
+canvas.addEventListener('touchstart', (e) => startDraw(e))
+canvas.addEventListener('touchmove', (e) => drawing(e))
+canvas.addEventListener('touchend', () => (isPaint = false))
+//desktop
 canvas.addEventListener('mouseup', () => (isPaint = false))
-canvas.addEventListener('mousedown', (e) => {
-  updateMousePosition(e)
+canvas.addEventListener('mousedown', (e) => startDraw(e))
+canvas.addEventListener('mousemove', (e) => drawing(e))
+function startDraw(event) {
+  updateMousePosition(event)
   isPaint = true
-})
-canvas.addEventListener('mousemove', ({ clientX, clientY }) => {
+}
+function drawing(event) {
   if (!isPaint) return
+  const { clientX, clientY } = event?.touches[0] ?? event
   lastX = mouseX
   lastY = mouseY
   updateMousePosition({ clientX, clientY })
@@ -40,7 +44,10 @@ canvas.addEventListener('mousemove', ({ clientX, clientY }) => {
   } else if (btn.textContent !== 'Paint') {
     draw(lastX, lastY, mouseX, mouseY, color, lineWidth)
   }
-})
+}
+function erase(x, y, size) {
+  ctx.clearRect(x - size / 2, y - size / 2, size, size)
+}
 
 btn.addEventListener('click', () => {
   btn.textContent = btn.textContent === 'Erase' ? 'Paint' : 'Erase'
